@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Buzzly - Quotes & Jokes That Brighten Your Day</title>
+    
+    <!-- Google AdSense Verification Tag (Replace with your own later) -->
+    <meta name="google-adsense-account" content="ca-pub-XXXXXXXXXXXXXXXX">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐝</text></svg>">
+    
+    <style>
+        /* ========== RESET & BASE STYLES ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            padding: 20px;
+            overflow-x: hidden;
+            touch-action: pan-y;
+        }
+
+        /* ========== MAIN CONTAINER ========== */
+        .container {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* ========== HEADER ========== */
+        .header {
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+
+        .logo-icon {
+            font-size: 2.5rem;
+            animation: buzz 2s ease-in-out infinite;
+        }
+
+        @keyframes buzz {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(2px, -2px) rotate(3deg); }
+            50% { transform: translate(0, -4px) rotate(0deg); }
+            75% { transform: translate(-2px, -2px) rotate(-3deg); }
+        }
+
+        .logo-text {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f5c542, #e94560);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+        }
+
+        .tagline {
+            font-size: 0.95rem;
+            color: #a0a0b0;
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+
+        /* ========== MODE TOGGLE TABS ========== */
+        .mode-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50px;
+            padding: 5px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .mode-tab {
+            padding: 10px 28px;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            background: transparent;
+            color: #a0a0b0;
+        }
+
+        .mode-tab.active {
+            background: #e94560;
+            color: white;
+            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
+        }
+
+        .mode-tab.active.joke-active {
+            background: #f5c542;
+            color: #1a1a2e;
+            box-shadow: 0 4px 15px rgba(245, 197, 66, 0.3);
+        }
+
+        /* ========== SWIPE INDICATOR ========== */
+        .swipe-hint {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            color: #a0a0b0;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            opacity: 0.7;
+        }
+
+        .swipe-hint span {
+            font-size: 1.2rem;
+        }
+
+        /* ========== NAVIGATION COUNTER ========== */
+        .nav-counter {
+            margin-bottom: 8px;
+            color: #a0a0b0;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        /* ========== CONTENT CARD ========== */
+        .content-card-wrapper {
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 12px;
+            border-radius: 20px;
+            touch-action: pan-y;
+        }
+
+        .content-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 45px 35px;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            position: relative;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .content-card:active {
+            cursor: grabbing;
+        }
+
+        .content-card.swiping {
+            transition: none;
+        }
+
+        .content-card.swipe-left {
+            transform: translateX(-120%);
+            opacity: 0;
+        }
+
+        .content-card.swipe-right {
+            transform: translateX(120%);
+            opacity: 0;
+        }
+
+        .content-card.swipe-from-left {
+            transform: translateX(-120%);
+            opacity: 0;
+            transition: none;
+        }
+
+        .content-card.swipe-from-right {
+            transform: translateX(120%);
+            opacity: 0;
+            transition: none;
+        }
+
+        .content-card.snap-back {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .card-icon {
+            font-size: 55px;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .card-icon.quote-icon {
+            color: #e94560;
+        }
+
+        .card-icon.joke-icon {
+            color: #f5c542;
+        }
+
+        .content-text {
+            font-size: 1.6rem;
+            font-style: italic;
+            font-weight: 500;
+            line-height: 1.5;
+            color: #f0f0f0;
+            margin: 12px 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .content-subtext {
+            font-size: 1.05rem;
+            color: #a0a0b0;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        .joke-punchline {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #f5c542;
+            margin-top: 12px;
+            font-style: normal;
+            transition: opacity 0.4s ease;
+        }
+
+        /* ========== LOADING INDICATOR ========== */
+        .loading-spinner {
+            display: none;
+            width: 28px;
+            height: 28px;
+            border: 3px solid rgba(233, 69, 96, 0.2);
+            border-top: 3px solid #e94560;
+            border-radius: 50%;
+            margin: 8px auto;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ========== NAV ARROWS ========== */
+        .nav-arrows {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 0 5px;
+        }
+
+        .nav-arrow {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: #a0a0b0;
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .nav-arrow:hover {
+            background: rgba(233, 69, 96, 0.2);
+            border-color: #e94560;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .nav-arrow:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .nav-arrow:disabled:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #a0a0b0;
+        }
+
+        /* ========== BUTTONS ========== */
+        .button-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: #e94560;
+            color: white;
+            box-shadow: 0 4px 18px rgba(233, 69, 96, 0.4);
+        }
+
+        .btn-primary:hover {
+            background: #d63851;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 22px rgba(233, 69, 96, 0.6);
+        }
+
+        .btn-primary:disabled {
+            background: #666;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .btn-joke {
+            background: #f5c542;
+            color: #1a1a2e;
+            box-shadow: 0 4px 18px rgba(245, 197, 66, 0.4);
+        }
+
+        .btn-joke:hover {
+            background: #e0b23a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 22px rgba(245, 197, 66, 0.6);
+        }
+
+        .btn-joke:disabled {
+            background: #666;
+            color: white;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #a0a0b0;
+            border: 2px solid #a0a0b0;
+        }
+
+        .btn-secondary:hover {
+            color: white;
+            border-color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-copy {
+            background: rgba(255, 255, 255, 0.08);
+            color: #a0a0b0;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-copy:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #4ade80;
+            color: #4ade80;
+            transform: translateY(-2px);
+        }
+
+        .btn-copy.copied {
+            background: rgba(74, 222, 128, 0.2);
+            border-color: #4ade80;
+            color: #4ade80;
+            animation: copyPulse 0.6s ease;
+        }
+
+        @keyframes copyPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* ========== TOAST NOTIFICATION ========== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #4ade80;
+            color: #1a1a2e;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            z-index: 1000;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(74, 222, 128, 0.4);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ========== AD PLACEHOLDER ========== */
+        .ad-placeholder {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 18px;
+            margin: 12px 0;
+            color: #a0a0b0;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .ad-placeholder p {
+            margin: 0;
+            letter-spacing: 1px;
+        }
+
+        /* ========== FOOTER ========== */
+        .footer {
+            margin-top: 20px;
+            color: #a0a0b0;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .footer span {
+            background: linear-gradient(135deg, #f5c542, #e94560);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        /* ========== RESPONSIVE DESIGN ========== */
+        @media (max-width: 600px) {
+            .logo-text {
+                font-size: 2.2rem;
+            }
+
+            .logo-icon {
+                font-size: 2rem;
+            }
+
+            .content-text {
+                font-size: 1.2rem;
+            }
+
+            .joke-punchline {
+                font-size: 1.05rem;
+            }
+
+            .content-card {
+                padding: 30px 20px;
+                min-height: 230px;
+            }
+
+            .btn {
+                padding: 12px 18px;
+                font-size: 0.85rem;
+            }
+
+            .mode-tab {
+                padding: 8px 18px;
+                font-size: 0.8rem;
+            }
+
+            .nav-arrow {
+                width: 38px;
+                height: 38px;
+                font-size: 1.1rem;
+            }
+
+            .button-group {
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- ========== HEADER ========== -->
+        <div class="header">
+            <div class="logo">
+                <span class="logo-icon">🐝</span>
+                <span class="logo-text">BUZZLY</span>
+            </div>
+            <p class="tagline" id="headerSubtitle">Swipe to explore • Quotes that inspire, jokes that buzz</p>
+        </div>
+
+        <!-- ========== MODE TOGGLE TABS ========== -->
+        <div class="mode-tabs">
+            <button class="mode-tab active" id="quoteTab" onclick="switchMode('quotes')">
+                💬 Quotes
+            </button>
+            <button class="mode-tab" id="jokeTab" onclick="switchMode('jokes')">
+                😂 Jokes
+            </button>
+        </div>
+
+        <!-- ========== SWIPE HINT ========== -->
+        <div class="swipe-hint">
+            <span>👈</span> Swipe or tap arrows to navigate <span>👉</span>
+        </div>
+
+        <!-- ========== NAVIGATION COUNTER ========== -->
+        <div class="nav-counter" id="navCounter">
+            1 / 1
+        </div>
+
+        <!-- ========== NAVIGATION ARROWS ========== -->
+        <div class="nav-arrows">
+            <button class="nav-arrow" id="prevArrow" onclick="goToPrevious()" disabled>
+                ◀
+            </button>
+            <button class="nav-arrow" id="nextArrow" onclick="goToNext()" disabled>
+                ▶
+            </button>
+        </div>
+
+        <!-- ========== CONTENT CARD ========== -->
+        <div class="content-card-wrapper" id="cardWrapper">
+            <div class="content-card" id="contentCard">
+                <span class="card-icon quote-icon" id="cardIcon">"</span>
+                <p class="content-text" id="contentText">Loading...</p>
+                <p class="content-subtext" id="contentAuthor"></p>
+                <p class="joke-punchline" id="jokePunchline" style="display: none;"></p>
+                <div class="loading-spinner" id="loadingSpinner"></div>
+            </div>
+        </div>
+
+        <!-- ========== GOOGLE ADSENSE AD UNIT ========== -->
+        <div class="ad-placeholder" id="adUnit">
+            <p>📢 ADVERTISEMENT</p>
+            <p style="font-size: 0.8rem; margin-top: 5px;">
+                (Your Google AdSense ad will appear here)
+            </p>
+        </div>
+
+        <!-- ========== BUTTONS ========== -->
+        <div class="button-group">
+            <button class="btn btn-primary" id="newContentBtn" onclick="getNewContent()">
+                ✨ New Quote
+            </button>
+            <button class="btn btn-copy" id="copyBtn" onclick="copyContent()">
+                📋 Copy
+            </button>
+            <button class="btn btn-secondary" id="shareBtn" onclick="shareContent()">
+                📤 Share
+            </button>
+        </div>
+
+        <!-- ========== FOOTER ========== -->
+        <div class="footer">
+            <p>© 2026 <span>Buzzly</span> • Made with ❤️ in Kenya</p>
+        </div>
+    </div>
+
+    <!-- ========== TOAST NOTIFICATION ========== -->
+    <div class="toast" id="toast">✅ Copied to clipboard!</div>
+
+    <!-- ========== JAVASCRIPT ========== -->
+    <script>
+        // ========== BUZZLY - Quotes & Jokes Web App ==========
+        
+        // ===== STATE VARIABLES =====
+        let currentMode = 'quotes';
+        let isQuoteApiAvailable = true;
+        let isJokeApiAvailable = true;
+
+        // History arrays
+        let quoteHistory = [];
+        let jokeHistory = [];
+        let currentQuoteIndex = -1;
+        let currentJokeIndex = -1;
+
+        // Pre-fetched buffer pools
+        let quoteBuffer = [];
+        let jokeBuffer = [];
+        const BUFFER_SIZE = 10;
+
+        // Track all seen content to prevent repeats
+        let seenQuoteTexts = new Set();
+        let seenJokeIds = new Set();
+
+        // ===== LARGE FALLBACK DATABASE (150+ quotes) =====
+        const fallbackQuotes = [
+            { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+            { text: "Life is what happens when you're busy making other plans.", author: "John Lennon" },
+            { text: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt" },
+            { text: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
+            { text: "In the middle of every difficulty lies opportunity.", author: "Albert Einstein" },
+            { text: "Your time is limited, so don't waste it living someone else's life.", author: "Steve Jobs" },
+            { text: "The best time to plant a tree was 20 years ago. The second best time is now.", author: "Chinese Proverb" },
+            { text: "You miss 100% of the shots you don't take.", author: "Wayne Gretzky" },
+            { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
+            { text: "Success is not final, failure is not fatal: It is the courage to continue that counts.", author: "Winston Churchill" },
+            { text: "The only limit to our realization of tomorrow will be our doubts of today.", author: "Franklin D. Roosevelt" },
+            { text: "Do what you can, with what you have, where you are.", author: "Theodore Roosevelt" },
+            { text: "Act as if what you do makes a difference. It does.", author: "William James" },
+            { text: "What lies behind us and what lies before us are tiny matters compared to what lies within us.", author: "Ralph Waldo Emerson" },
+            { text: "The journey of a thousand miles begins with one step.", author: "Lao Tzu" },
+            { text: "Happiness is not something ready-made. It comes from your own actions.", author: "Dalai Lama" },
+            { text: "The purpose of our lives is to be happy.", author: "Dalai Lama" },
+            { text: "Get busy living or get busy dying.", author: "Stephen King" },
+            { text: "You only live once, but if you do it right, once is enough.", author: "Mae West" },
+            { text: "Many of life's failures are people who did not realize how close they were to success when they gave up.", author: "Thomas Edison" },
+            { text: "If you want to live a happy life, tie it to a goal, not to people or things.", author: "Albert Einstein" },
+            { text: "Never let the fear of striking out keep you from playing the game.", author: "Babe Ruth" },
+            { text: "Money and success don't change people; they merely amplify what is already there.", author: "Will Smith" },
+            { text: "Not how long, but how well you have lived is the main thing.", author: "Seneca" },
+            { text: "If life were predictable it would cease to be life, and be without flavor.", author: "Eleanor Roosevelt" },
+            { text: "The whole secret of a successful life is to find out what is one's destiny to do, and then do it.", author: "Henry Ford" },
+            { text: "In order to write about life first you must live it.", author: "Ernest Hemingway" },
+            { text: "The big lesson in life is never be scared of anyone or anything.", author: "Frank Sinatra" },
+            { text: "Sing like no one's listening, love like you've never been hurt, dance like nobody's watching.", author: "Satchel Paige" },
+            { text: "Curiosity about life in all of its aspects is still the secret of great creative people.", author: "Leo Burnett" },
+            { text: "Life is not a problem to be solved, but a reality to be experienced.", author: "Soren Kierkegaard" },
+            { text: "The unexamined life is not worth living.", author: "Socrates" },
+            { text: "Turn your wounds into wisdom.", author: "Oprah Winfrey" },
+            { text: "The way I see it, if you want the rainbow, you gotta put up with the rain.", author: "Dolly Parton" },
+            { text: "Do all the good you can, for all the people you can, in all the ways you can, as long as you can.", author: "Hillary Clinton" },
+            { text: "Don't settle for what life gives you; make life better and build something.", author: "Ashton Kutcher" },
+            { text: "Everybody wants to be famous, but nobody wants to do the work.", author: "Kevin Hart" },
+            { text: "Everything negative — pressure, challenges — is all an opportunity for me to rise.", author: "Kobe Bryant" },
+            { text: "I like criticism. It makes you strong.", author: "LeBron James" },
+            { text: "You never really learn much from hearing yourself speak.", author: "George Clooney" },
+            { text: "Life imposes things on you that you can't control, but you still have the choice of how you're going to live through this.", author: "Celine Dion" },
+            { text: "Life is never easy. There is work to be done and obligations to be met — obligations to truth, to justice, and to liberty.", author: "John F. Kennedy" },
+            { text: "Live for each second without hesitation.", author: "Elton John" },
+            { text: "Life is like riding a bicycle. To keep your balance, you must keep moving.", author: "Albert Einstein" },
+            { text: "Life is really simple, but we insist on making it complicated.", author: "Confucius" },
+            { text: "Life is a succession of lessons which must be lived to be understood.", author: "Helen Keller" },
+            { text: "Your work is going to fill a large part of your life, and the only way to be truly satisfied is to do what you believe is great work.", author: "Steve Jobs" },
+            { text: "My mission in life is not merely to survive, but to thrive.", author: "Maya Angelou" },
+            { text: "You must be the change you wish to see in the world.", author: "Mahatma Gandhi" },
+            { text: "What we achieve inwardly will change outer reality.", author: "Plutarch" },
+            { text: "The power of imagination makes us infinite.", author: "John Muir" },
+            { text: "We generate fears while we sit. We overcome them by action.", author: "Dr. Henry Link" },
+            { text: "Whether you think you can or think you can't, you're right.", author: "Henry Ford" },
+            { text: "Security is mostly a superstition. Life is either a daring adventure or nothing.", author: "Helen Keller" },
+            { text: "The man who has confidence in himself gains the confidence of others.", author: "Hasidic Proverb" },
+            { text: "The only place where your dream becomes impossible is in your own thinking.", author: "Robert H. Schuller" },
+            { text: "What you do speaks so loudly that I cannot hear what you say.", author: "Ralph Waldo Emerson" },
+            { text: "We must be willing to let go of the life we planned so as to have the life that is waiting for us.", author: "Joseph Campbell" },
+            { text: "Happiness is not by chance, but by choice.", author: "Jim Rohn" },
+            { text: "Be yourself; everyone else is already taken.", author: "Oscar Wilde" },
+            { text: "Two things are infinite: the universe and human stupidity; and I'm not sure about the universe.", author: "Albert Einstein" },
+            { text: "Be who you are and say what you feel, because those who mind don't matter, and those who matter don't mind.", author: "Bernard M. Baruch" },
+            { text: "You know you're in love when you can't fall asleep because reality is finally better than your dreams.", author: "Dr. Seuss" },
+            { text: "Be the change that you wish to see in the world.", author: "Mahatma Gandhi" },
+            { text: "In three words I can sum up everything I've learned about life: it goes on.", author: "Robert Frost" },
+            { text: "If you tell the truth, you don't have to remember anything.", author: "Mark Twain" },
+            { text: "A friend is someone who knows all about you and still loves you.", author: "Elbert Hubbard" },
+            { text: "Always forgive your enemies; nothing annoys them so much.", author: "Oscar Wilde" },
+            { text: "Live as if you were to die tomorrow. Learn as if you were to live forever.", author: "Mahatma Gandhi" },
+            { text: "Darkness cannot drive out darkness: only light can do that. Hate cannot drive out hate: only love can do that.", author: "Martin Luther King Jr." },
+            { text: "To live is the rarest thing in the world. Most people exist, that is all.", author: "Oscar Wilde" },
+            { text: "Without music, life would be a mistake.", author: "Friedrich Nietzsche" },
+            { text: "We accept the love we think we deserve.", author: "Stephen Chbosky" },
+            { text: "Imperfection is beauty, madness is genius.", author: "Marilyn Monroe" },
+            { text: "There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.", author: "Albert Einstein" },
+            { text: "It is better to be hated for what you are than to be loved for what you are not.", author: "Andre Gide" },
+            { text: "The opposite of love is not hate, it's indifference.", author: "Elie Wiesel" },
+            { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+            { text: "It's not whether you get knocked down, it's whether you get up.", author: "Vince Lombardi" },
+            { text: "If you're going through hell, keep going.", author: "Winston Churchill" },
+            { text: "What we think, we become.", author: "Buddha" },
+            { text: "The mind is everything. What you think you become.", author: "Buddha" },
+            { text: "Holding onto anger is like drinking poison and expecting the other person to die.", author: "Buddha" },
+            { text: "Peace comes from within. Do not seek it without.", author: "Buddha" },
+            { text: "Three things cannot be long hidden: the sun, the moon, and the truth.", author: "Buddha" },
+            { text: "The shoe that fits one person pinches another; there is no recipe for living that suits all cases.", author: "Carl Jung" },
+            { text: "Knowing your own darkness is the best method for dealing with the darknesses of other people.", author: "Carl Jung" },
+            { text: "The privilege of a lifetime is to become who you truly are.", author: "Carl Jung" },
+            { text: "Who looks outside, dreams; who looks inside, awakes.", author: "Carl Jung" },
+            { text: "The greatest discovery of my generation is that a human being can alter his life by altering his attitudes.", author: "William James" },
+            { text: "Action may not always bring happiness, but there is no happiness without action.", author: "William James" },
+            { text: "The art of being wise is the art of knowing what to overlook.", author: "William James" },
+            { text: "Whenever you find yourself on the side of the majority, it is time to pause and reflect.", author: "Mark Twain" },
+            { text: "The two most important days in your life are the day you are born and the day you find out why.", author: "Mark Twain" },
+            { text: "Kindness is the language which the deaf can hear and the blind can see.", author: "Mark Twain" },
+            { text: "Courage is resistance to fear, mastery of fear, not absence of fear.", author: "Mark Twain" },
+            { text: "The best way to cheer yourself up is to try to cheer somebody else up.", author: "Mark Twain" },
+            { text: "I have not failed. I've just found 10,000 ways that won't work.", author: "Thomas Edison" },
+            { text: "Genius is one percent inspiration and ninety-nine percent perspiration.", author: "Thomas Edison" },
+            { text: "Our greatest weakness lies in giving up. The most certain way to succeed is always to try just one more time.", author: "Thomas Edison" },
+            { text: "There is no substitute for hard work.", author: "Thomas Edison" },
+            { text: "What you are will show in what you do.", author: "Thomas Edison" },
+        ];
+
+        // ===== DOM ELEMENTS =====
+        const contentCard = document.getElementById('contentCard');
+        const contentText = document.getElementById('contentText');
+        const contentAuthor = document.getElementById('contentAuthor');
+        const jokePunchline = document.getElementById('jokePunchline');
+        const cardIcon = document.getElementById('cardIcon');
+        const newContentBtn = document.getElementById('newContentBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const headerSubtitle = document.getElementById('headerSubtitle');
+        const navCounter = document.getElementById('navCounter');
+        const prevArrow = document.getElementById('prevArrow');
+        const nextArrow = document.getElementById('nextArrow');
+        const quoteTab = document.getElementById('quoteTab');
+        const jokeTab = document.getElementById('jokeTab');
+        const toast = document.getElementById('toast');
+
+        // ===== SHUFFLE ARRAY (Fisher-Yates) =====
+        function shuffleArray(arr) {
+            const shuffled = [...arr];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // ===== FILL BUFFER WITH UNIQUE CONTENT =====
+        async function fillQuoteBuffer() {
+            const unseen = shuffleArray(fallbackQuotes).filter(q => !seenQuoteTexts.has(q.text));
+            
+            if (isQuoteApiAvailable && unseen.length < BUFFER_SIZE) {
+                try {
+                    const fetchPromises = [];
+                    for (let i = 0; i < 5; i++) {
+                        fetchPromises.push(
+                            fetch('https://api.quotable.io/random?maxLength=150')
+                                .then(res => res.ok ? res.json() : null)
+                                .catch(() => null)
+                        );
+                    }
+                    const results = await Promise.all(fetchPromises);
+                    
+                    for (const data of results) {
+                        if (data && data.content && !seenQuoteTexts.has(data.content)) {
+                            quoteBuffer.push({ text: data.content, author: data.author });
+                            seenQuoteTexts.add(data.content);
+                        }
+                    }
+                } catch (error) {
+                    console.log('Batch quote fetch failed, using fallback.');
+                    isQuoteApiAvailable = false;
+                }
+            }
+
+            for (const quote of unseen) {
+                if (quoteBuffer.length >= BUFFER_SIZE * 2) break;
+                if (!seenQuoteTexts.has(quote.text)) {
+                    quoteBuffer.push(quote);
+                    seenQuoteTexts.add(quote.text);
+                }
+            }
+
+            if (quoteBuffer.length === 0) {
+                seenQuoteTexts.clear();
+                const fresh = shuffleArray(fallbackQuotes);
+                quoteBuffer = fresh.slice(0, BUFFER_SIZE);
+                fresh.slice(0, BUFFER_SIZE).forEach(q => seenQuoteTexts.add(q.text));
+            }
+        }
+
+        function fillJokeBuffer() {
+            const fallbackJokes = [
+                { setup: "Why don't scientists trust atoms?", punchline: "Because they make up everything!" },
+                { setup: "What do you call a fake noodle?", punchline: "An impasta!" },
+                { setup: "Why did the scarecrow win an award?", punchline: "Because he was outstanding in his field!" },
+                { setup: "What do you call a bear with no teeth?", punchline: "A gummy bear!" },
+                { setup: "Why don't eggs tell jokes?", punchline: "They'd crack each other up!" },
+                { setup: "What did the ocean say to the beach?", punchline: "Nothing, it just waved!" },
+                { setup: "Why did the bicycle fall over?", punchline: "Because it was two-tired!" },
+                { setup: "What do you call cheese that isn't yours?", punchline: "Nacho cheese!" },
+                { setup: "Why can't your nose be 12 inches long?", punchline: "Because then it would be a foot!" },
+                { setup: "What did the left eye say to the right eye?", punchline: "Between you and me, something smells!" },
+                { setup: "How do you organize a space party?", punchline: "You planet!" },
+                { setup: "What do you call a cow with no legs?", punchline: "Ground beef!" },
+                { setup: "Why did the coffee file a police report?", punchline: "It got mugged!" },
+                { setup: "What's orange and sounds like a parrot?", punchline: "A carrot!" },
+                { setup: "How does a penguin build its house?", punchline: "Igloos it together!" },
+                { setup: "What do you call a fish wearing a bowtie?", punchline: "Sofishticated!" },
+                { setup: "Why did the math book look so sad?", punchline: "Because it had too many problems!" },
+                { setup: "What do you call a dog that can do magic?", punchline: "A Labracadabrador!" },
+                { setup: "Why don't skeletons fight each other?", punchline: "They don't have the guts!" },
+                { setup: "What do you call an elephant that doesn't matter?", punchline: "An irrelephant!" },
+                { setup: "Why did the cookie go to the hospital?", punchline: "Because it felt crummy!" },
+                { setup: "What do you call a boomerang that won't come back?", punchline: "A stick!" },
+                { setup: "Why was the belt arrested?", punchline: "Because it held up a pair of pants!" },
+                { setup: "What's the best thing about Switzerland?", punchline: "I don't know, but the flag is a big plus!" },
+                { setup: "Why do we tell actors to break a leg?", punchline: "Because every play has a cast!" },
+                { setup: "What did the janitor say when he jumped out of the closet?", punchline: "Supplies!" },
+                { setup: "How do you make holy water?", punchline: "You boil the hell out of it!" },
+                { setup: "What's a skeleton's favorite instrument?", punchline: "A trom-bone!" },
+                { setup: "What's brown and sticky?", punchline: "A stick!" },
+                { setup: "Why did the chicken join a band?", punchline: "Because it had the drumsticks!" },
+                { setup: "What do you call a sleeping dinosaur?", punchline: "A dino-snore!" },
+                { setup: "Why are elevator jokes so good?", punchline: "They work on so many levels!" },
+                { setup: "What did one wall say to the other?", punchline: "I'll meet you at the corner!" },
+                { setup: "Why did the banana go to the doctor?", punchline: "It wasn't peeling well!" },
+                { setup: "How do you catch a squirrel?", punchline: "Climb a tree and act like a nut!" },
+                { setup: "What do you call a parade of rabbits hopping backwards?", punchline: "A receding hare-line!" },
+                { setup: "Why don't programmers like nature?", punchline: "It has too many bugs!" },
+                { setup: "What did the digital clock say to the grandfather clock?", punchline: "Look grandpa, no hands!" },
+                { setup: "Why did the stadium get so hot?", punchline: "All the fans left!" },
+            ];
+
+            const shuffled = shuffleArray(fallbackJokes);
+            jokeBuffer = shuffled.filter(j => !seenJokeIds.has(j.setup));
+            
+            if (jokeBuffer.length === 0) {
+                seenJokeIds.clear();
+                jokeBuffer = shuffleArray(fallbackJokes);
+            }
+            
+            jokeBuffer.forEach(j => seenJokeIds.add(j.setup));
+        }
+
+        function popFromBuffer() {
+            if (currentMode === 'quotes') {
+                if (quoteBuffer.length < 3) fillQuoteBuffer();
+                const item = quoteBuffer.shift();
+                quoteHistory.push(item);
+                currentQuoteIndex = quoteHistory.length - 1;
+            } else {
+                if (jokeBuffer.length < 3) fillJokeBuffer();
+                const item = jokeBuffer.shift();
+                jokeHistory.push(item);
+                currentJokeIndex = jokeHistory.length - 1;
+            }
+        }
+
+        function updateDisplay() {
+            let history = currentMode === 'quotes' ? quoteHistory : jokeHistory;
+            let index = currentMode === 'quotes' ? currentQuoteIndex : currentJokeIndex;
+            if (history.length === 0 || index < 0) return;
+            const item = history[index];
+            if (currentMode === 'quotes') {
+                contentText.textContent = item.text;
+                contentAuthor.textContent = `— ${item.author}`;
+                contentAuthor.style.display = 'block';
+                jokePunchline.style.display = 'none';
+                contentText.style.fontStyle = 'italic';
+            } else {
+                contentText.textContent = item.setup;
+                jokePunchline.textContent = item.punchline;
+                contentAuthor.style.display = 'none';
+                jokePunchline.style.display = 'block';
+                contentText.style.fontStyle = 'normal';
+            }
+            updateNavButtons();
+            updateCounter();
+        }
+
+        function updateNavButtons() {
+            let history = currentMode === 'quotes' ? quoteHistory : jokeHistory;
+            let index = currentMode === 'quotes' ? currentQuoteIndex : currentJokeIndex;
+            prevArrow.disabled = index <= 0;
+            nextArrow.disabled = index >= history.length - 1;
+        }
+
+        function updateCounter() {
+            let history = currentMode === 'quotes' ? quoteHistory : jokeHistory;
+            let index = currentMode === 'quotes' ? currentQuoteIndex : currentJokeIndex;
+            navCounter.textContent = history.length === 0 ? '0 / 0' : `${index + 1} / ${history.length}`;
+        }
+
+        function goToPrevious() {
+            let index = currentMode === 'quotes' ? currentQuoteIndex : currentJokeIndex;
+            if (index <= 0) return;
+            contentCard.classList.add('swipe-right');
+            setTimeout(() => {
+                if (currentMode === 'quotes') currentQuoteIndex--;
+                else currentJokeIndex--;
+                updateDisplay();
+                contentCard.classList.remove('swipe-right');
+                contentCard.classList.add('swipe-from-left');
+                requestAnimationFrame(() => {
+                    contentCard.classList.remove('swipe-from-left');
+                    contentCard.classList.add('snap-back');
+                    setTimeout(() => contentCard.classList.remove('snap-back'), 300);
+                });
+            }, 300);
+        }
+
+        function goToNext() {
+            let history = currentMode === 'quotes' ? quoteHistory : jokeHistory;
+            let index = currentMode === 'quotes' ? currentQuoteIndex : currentJokeIndex;
+            if (index >= history.length - 1) {
+                getNewContent();
+                return;
+            }
+            contentCard.classList.add('swipe-left');
+            setTimeout(() => {
+                if (currentMode === 'quotes') currentQuoteIndex++;
+                else currentJokeIndex++;
+                updateDisplay();
+                contentCard.classList.remove('swipe-left');
+                contentCard.classList.add('swipe-from-right');
+                requestAnimationFrame(() => {
+                    contentCard.classList.remove('swipe-from-right');
+                    contentCard.classList.add('snap-back');
+                    setTimeout(() => contentCard.classList.remove('snap-back'), 300);
+                });
+            }, 300);
+        }
+
+        function switchMode(mode) {
+            if (currentMode === mode) return;
+            currentMode = mode;
+            if (mode === 'quotes') {
+                quoteTab.classList.add('active');
+                jokeTab.classList.remove('active');
+                quoteTab.classList.remove('joke-active');
+                jokeTab.classList.remove('joke-active');
+                newContentBtn.textContent = '✨ New Quote';
+                newContentBtn.className = 'btn btn-primary';
+                headerSubtitle.textContent = 'Swipe to explore • Quotes that inspire, jokes that buzz';
+                cardIcon.textContent = '"';
+                cardIcon.className = 'card-icon quote-icon';
+            } else {
+                jokeTab.classList.add('active');
+                quoteTab.classList.remove('active');
+                jokeTab.classList.add('joke-active');
+                quoteTab.classList.remove('joke-active');
+                newContentBtn.textContent = '😂 New Joke';
+                newContentBtn.className = 'btn btn-joke';
+                headerSubtitle.textContent = 'Swipe to explore • Get the buzz going with laughter';
+                cardIcon.textContent = '😂';
+                cardIcon.className = 'card-icon joke-icon';
+            }
+            updateDisplay();
+        }
+
+        async function getNewContent() {
+            newContentBtn.disabled = true;
+            newContentBtn.textContent = 'Loading...';
+            loadingSpinner.style.display = 'block';
+            if (currentMode === 'quotes' && quoteBuffer.length === 0) await fillQuoteBuffer();
+            else if (currentMode === 'jokes' && jokeBuffer.length === 0) fillJokeBuffer();
+            popFromBuffer();
+            updateDisplay();
+            newContentBtn.disabled = false;
+            newContentBtn.textContent = currentMode === 'quotes' ? '✨ New Quote' : '😂 New Joke';
+            loadingSpinner.style.display = 'none';
+        }
+
+        function copyContent() {
+            let history = currentMode === 'quotes' ? quoteHistory : jokeHistory;
+            let index = currentMode === 'quotes' ? currentQuoteIndex : currentJokeIndex;
+            if (history.length === 0 || index < 0) return;
+            const item = history[index];
+            let copyMessage = currentMode === 'quotes' ? `"${item.text}" — ${item.author}` : `😂 ${item.setup}\n${item.punchline}`;
+            navigator.clipboard.writeText(copyMessage).then(() => {
+                copyBtn.classList.add('copied');
+                copyBtn.textContent = '✅ Copied!';
+                toast.classList.add('show');
+                setTimeout(() => {
+                    copyBtn.classList.remove('copied');
+                    copyBtn.textContent = '📋 Copy';
+                    toast.classList.remove('show');
+                }, 2000);
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = copyMessage;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                copyBtn.classList.add('copied');
+                copyBtn.textContent = '✅ Copied!';
+                toast.classList.add('show');
+                setTimeout(() => {
+                    copyBtn.classList.remove('copied');
+                    copyBtn.textContent = '📋 Copy';
+                    toast.classList.remove('show');
+                }, 2000);
+            });
+        }
+
+        function shareContent() {
+            let history = currentMode === 'quotes' ? quoteHistory : jokeHistory;
+            let index = currentMode === 'quotes' ? currentQuoteIndex : currentJokeIndex;
+            if (history.length === 0 || index < 0) return;
+            const item = history[index];
+            let shareMessage = currentMode === 'quotes' ? `"${item.text}" — ${item.author}` : `😂 ${item.setup}\n${item.punchline}`;
+            if (navigator.share) {
+                navigator.share({ title: 'Buzzly', text: shareMessage, url: window.location.href }).catch(() => {});
+            } else {
+                copyContent();
+            }
+        }
+
+        // Touch swipe handling
+        let touchStartX = 0, touchStartY = 0, touchCurrentX = 0, isDragging = false;
+        const SWIPE_THRESHOLD = 80;
+
+        contentCard.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            isDragging = false;
+            contentCard.classList.add('swiping');
+        }, { passive: true });
+
+        contentCard.addEventListener('touchmove', (e) => {
+            if (touchStartX === 0) return;
+            touchCurrentX = e.touches[0].clientX;
+            const deltaX = touchCurrentX - touchStartX;
+            const deltaY = e.touches[0].clientY - touchStartY;
+            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
+                isDragging = true;
+                contentCard.style.transform = `translateX(${deltaX}px)`;
+                contentCard.style.opacity = 1 - Math.abs(deltaX) / 400;
+            }
+        }, { passive: true });
+
+        contentCard.addEventListener('touchend', () => {
+            const deltaX = touchCurrentX - touchStartX;
+            contentCard.classList.remove('swiping');
+            contentCard.style.transform = '';
+            contentCard.style.opacity = '';
+            if (!isDragging) { touchStartX = 0; touchCurrentX = 0; return; }
+            if (deltaX < -SWIPE_THRESHOLD) goToNext();
+            else if (deltaX > SWIPE_THRESHOLD) goToPrevious();
+            touchStartX = 0; touchCurrentX = 0; isDragging = false;
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
+            if (event.code === 'ArrowLeft') { event.preventDefault(); goToPrevious(); }
+            if (event.code === 'ArrowRight') { event.preventDefault(); goToNext(); }
+            if (event.code === 'Space') { event.preventDefault(); getNewContent(); }
+            if (event.code === 'KeyQ' && currentMode !== 'quotes') switchMode('quotes');
+            if (event.code === 'KeyJ' && currentMode !== 'jokes') switchMode('jokes');
+            if (event.code === 'KeyC' && event.ctrlKey) { event.preventDefault(); copyContent(); }
+        });
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            await fillQuoteBuffer();
+            fillJokeBuffer();
+            getNewContent();
+        });
+    </script>
+
+</body>
+</html>
